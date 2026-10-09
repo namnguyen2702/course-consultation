@@ -27,10 +27,9 @@
   <section class="card login-card">
     <h2>Thêm khóa học</h2>
 
-    <form th:action="@{/admin/courses}"
+    <form th:action="@{/admin/courses/{id}/edit(id=${courseId})}"
           th:object="${courseForm}"
-          method="post"
-          onsubmit="this.querySelector('button[type=submit]').disabled = true;">
+          method="post">
 
       <div class="error"
            role="alert"
@@ -67,41 +66,10 @@
       <button class="button full" type="submit">
         Thêm khóa học
       </button>
+      <a class="back" th:href="@{/admin/courses}">
+        ← Quay lại quản lý khóa học
+      </a>
     </form>
-  </section>
-
-  <h2>Khóa học đang mở</h2>
-
-  <p class="empty" th:if="${#lists.isEmpty(courses)}">
-    Chưa có khóa học đang mở.
-  </p>
-
-  <section class="grid">
-    <article class="card" th:each="course : ${courses}">
-      <h3 th:text="${course.name()}"></h3>
-      <p th:text="${course.description()}"></p>
-      <p th:text="${course.prerequisites()}"></p>
-
-      <span class="badge"
-            th:text="${course.durationWeeks()} + ' tuần'">
-            </span>
-      <p>
-        <a class="button secondary"
-           th:href="@{/admin/courses/{id}/edit(id=${course.id()})}">
-          Sửa
-        </a>
-      </p>
-
-      <form th:action="@{/admin/courses/{id}/deactivate(id=${course.id()})}"
-            method="post"
-            onsubmit="return confirm('Ngừng mở khóa học này? Các lịch đã đặt vẫn được giữ.');">
-
-        <button class="button secondary" type="submit">
-          Ngừng mở
-        </button>
-      </form>
-    </article>
-  </section>
 </main>
 </body>
 </html>
