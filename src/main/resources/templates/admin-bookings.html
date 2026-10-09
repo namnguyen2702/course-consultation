@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Quản lý lịch tư vấn</title>
+
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="navbar">
+  <a class="brand" th:href="@{/courses}">CodePath</a>
+  <span class="badge">Quản trị viên</span>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h1>Quản lý lịch tư vấn</h1>
+    <p>Danh sách lịch của tất cả khách hàng · Giờ Việt Nam.</p>
+  </section>
+
+  <p class="empty" th:if="${#lists.isEmpty(bookings)}">
+    Chưa có lịch tư vấn nào.
+  </p>
+
+  <section class="grid">
+    <article class="card"
+             th:each="booking : ${bookings}">
+
+      <h3 th:text="${booking.customerName()}"></h3>
+
+      <p th:text="${booking.customerEmail()}"></p>
+
+      <p>
+        Mã lịch:
+        <strong th:text="${booking.id()}"></strong>
+      </p>
+
+      <p>
+        Mã khóa học:
+        <span th:text="${booking.courseId()}"></span>
+      </p>
+
+      <p>
+        Mã tư vấn viên:
+        <span th:text="${booking.consultantId()}"></span>
+      </p>
+
+      <p th:text="${booking.startAt().format(
+                T(java.time.format.DateTimeFormatter)
+                    .ofPattern('dd/MM/yyyy HH:mm')
+            )}"></p>
+
+      <p>
+        Kết thúc:
+        <span th:text="${booking.endAt().toLocalTime()}"></span>
+      </p>
+
+      <span class="badge" th:switch="${booking.status()}">
+                <span th:case="'CONFIRMED'">Đã xác nhận</span>
+                <span th:case="'CANCELLED'">Đã hủy</span>
+                <span th:case="'COMPLETED'">Đã hoàn thành</span>
+                <span th:case="'NO_SHOW'">Vắng mặt</span>
+                <span th:case="*" th:text="${booking.status()}"></span>
+            </span>
+    </article>
+  </section>
+
+  <a class="back" th:href="@{/courses}">
+    ← Quay lại khóa học
+  </a>
+</main>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Kết quả build
+target/
+out/
+*.class
+
+# Cấu hình IntelliJ cá nhân
+.idea/
+*.iml
+
+# Cấu hình và mật khẩu riêng
+.env
+.env.*
+!.env.example
+application-local.properties
+
+# Log
+*.log
+
+# File hệ điều hành
+Thumbs.db
+.DS_Store

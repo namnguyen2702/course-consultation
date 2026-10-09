@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Lịch tư vấn của tôi</title>
+
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="navbar">
+  <a class="brand" th:href="@{/courses}">CodePath</a>
+</header>
+
+<main class="container">
+  <p role="status"
+     th:if="${successMessage != null}"
+     th:text="${successMessage}">
+  </p>
+
+  <p class="error"
+     role="alert"
+     th:if="${errorMessage != null}"
+     th:text="${errorMessage}">
+  </p>
+  <section class="hero">
+    <h1>Lịch tư vấn của tôi</h1>
+    <p>Giờ Việt Nam · Mỗi buổi kéo dài 30 phút.</p>
+  </section>
+
+  <p class="empty" th:if="${#lists.isEmpty(bookings)}">
+    Bạn chưa có lịch tư vấn nào.
+  </p>
+
+  <section class="grid">
+    <article class="card"
+             th:each="booking : ${bookings}">
+
+      <h3 th:text="${booking.courseName()}"></h3>
+
+      <p>
+        Tư vấn viên:
+        <strong th:text="${booking.consultantName()}"></strong>
+      </p>
+
+      <p th:text="${booking.startAt().format(
+                T(java.time.format.DateTimeFormatter)
+                    .ofPattern('dd/MM/yyyy HH:mm')
+            )}"></p>
+
+      <p>
+        Kết thúc:
+        <span th:text="${booking.endAt().toLocalTime()}"></span>
+      </p>
+
+      <span class="badge" th:switch="${booking.status()}">
+                <span th:case="'CONFIRMED'">Đã xác nhận</span>
+                <span th:case="'CANCELLED'">Đã hủy</span>
+                <span th:case="'COMPLETED'">Đã hoàn thành</span>
+                <span th:case="'NO_SHOW'">Vắng mặt</span>
+                <span th:case="*" th:text="${booking.status()}"></span>
+            </span>
+      <form th:if="${booking.status() == 'CONFIRMED'}"
+            th:action="@{/my-bookings/{id}/cancel(id=${booking.id()})}"
+            method="post"
+            onsubmit="return confirm('Bạn có chắc muốn hủy lịch tư vấn này?');">
+
+        <p>Chỉ được hủy trước giờ tư vấn ít nhất 2 giờ.</p>
+
+        <button class="button secondary" type="submit">
+          Hủy lịch
+        </button>
+      </form>
+    </article>
+  </section>
+
+  <a class="back" th:href="@{/courses}">
+    ← Xem khóa học
+  </a>
+</main>
+</body>
+</html>

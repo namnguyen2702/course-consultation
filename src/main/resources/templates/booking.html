@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Chọn tư vấn viên</title>
+
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="navbar">
+  <a class="brand" th:href="@{/courses}">
+    CodePath
+  </a>
+</header>
+
+<main class="container">
+  <p class="error"
+  role="alert"
+  th:if="${errorMessage != null}"
+  th:text="${errorMessage}">
+  </p>
+  <section class="hero">
+    <p class="eyebrow">ĐẶT LỊCH TƯ VẤN</p>
+
+    <h1 th:text="${course.name()}">
+      Tên khóa học
+    </h1>
+
+    <p>Chọn tư vấn viên để trao đổi về khóa học này.</p>
+  </section>
+
+  <h2>Tư vấn viên</h2>
+
+  <p class="empty"
+     th:if="${#lists.isEmpty(consultants)}">
+    Hiện chưa có tư vấn viên.
+  </p>
+
+  <section class="grid">
+    <article class="card"
+             th:each="consultant : ${consultants}">
+
+      <h3 th:text="${consultant.fullName()}">
+        Tên tư vấn viên
+      </h3>
+
+      <p class="badge"
+         th:text="${consultant.expertise()}">
+        Chuyên môn
+      </p>
+
+      <p th:text="${consultant.bio()}">
+        Giới thiệu
+      </p>
+      <a class="button"
+         th:href="@{/booking(
+       courseId=${course.id()},
+       consultantId=${consultant.id()}
+   )}">
+        Xem giờ còn trống
+      </a>
+    </article>
+  </section>
+  <section th:if="${selectedConsultantId != null}">
+    <h2>Khung giờ còn trống</h2>
+
+    <p>Giờ Việt Nam · Mỗi buổi tư vấn kéo dài 30 phút.</p>
+
+    <p class="empty"
+       th:if="${#lists.isEmpty(slots)}">
+      Tư vấn viên này hiện chưa có giờ còn trống.
+      Bạn hãy chọn người khác.
+    </p>
+
+    <div class="grid">
+      <article class="card"
+               th:each="slot : ${slots}">
+
+        <h3 th:text="${slot.startAt().format(
+                T(java.time.format.DateTimeFormatter)
+                    .ofPattern('dd/MM/yyyy')
+            )}">
+          Ngày tư vấn
+        </h3>
+
+        <p>
+                <span th:text="${slot.startAt().toLocalTime()}">
+                    Giờ bắt đầu
+                </span>
+
+          <span>–</span>
+
+          <span th:text="${slot.endAt().toLocalTime()}">
+                    Giờ kết thúc
+                </span>
+        </p>
+        <form th:action="@{/booking}" method="post">
+          <input type="hidden"
+                 name="courseId"
+                 th:value="${course.id()}">
+
+          <input type="hidden"
+                 name="slotId"
+                 th:value="${slot.id()}">
+
+          <button class="button" type="submit">
+            Đặt giờ này
+          </button>
+        </form>
+      </article>
+    </div>
+  </section>
+  <a class="back" th:href="@{/courses}">
+    ← Quay lại khóa học
+  </a>
+</main>
+</body>
+</html>

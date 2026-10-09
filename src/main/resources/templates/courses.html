@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Khóa học | CodePath</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="navbar">
+    <a class="brand" th:href="@{/courses}">CodePath<span>Tư vấn khóa học lập trình</span></a>
+    <a th:if="${displayName == null}" class="button" th:href="@{/login}">Đăng nhập</a>
+    <div th:if="${displayName != null}" class="account">
+        <span th:text="${displayName}"></span>
+        <span class="badge" th:text="${role == 'ADMIN' ? 'Quản trị viên' : 'Khách hàng'}"></span>
+        <a class="button secondary"
+           th:if="${role == 'CUSTOMER'}"
+           th:href="@{/my-bookings}">
+            Lịch của tôi
+        </a>
+        <a class="button secondary"
+           th:if="${role == 'ADMIN'}"
+           th:href="@{/admin/bookings}">
+            Quản lý lịch
+        </a>
+        <form th:action="@{/api/auth/logout}" method="post">
+            <button class="button secondary" type="submit">Đăng xuất</button>
+        </form>
+    </div>
+</header>
+<main class="container">
+    <p role="status"
+       th:if="${successMessage != null}"
+       th:text="${successMessage}">
+
+    </p>
+    <section class="hero">
+        <p class="eyebrow">BẮT ĐẦU TỪ MỤC TIÊU CỦA BẠN</p>
+        <h1>Chọn khóa học phù hợp.<br>Xây nền tảng cho bước tiếp theo.</h1>
+        <p>Tìm hiểu nội dung và kiến thức đầu vào trước khi trao đổi với tư vấn viên.</p>
+    </section>
+    <div class="section-title"><h2>Khóa học đang mở</h2><span th:text="${#lists.size(courses)} + ' khóa học'"></span>
+    </div>
+    <p th:if="${#lists.isEmpty(courses)}" class="empty">Hiện chưa có khóa học đang mở. Vui lòng quay lại sau.</p>
+    <section class="grid">
+        <article class="card" th:each="course : ${courses}">
+            <span class="badge" th:text="${course.durationWeeks()} + ' tuần'"></span>
+            <h3 th:text="${course.name()}"></h3>
+            <p th:text="${course.description()}"></p>
+            <div class="requirements"><strong>Kiến thức đầu vào</strong>
+                <p th:text="${course.prerequisites()}"></p></div>
+            <a class="button"
+               th:href="@{/booking(courseId=${course.id()})}">
+                Đặt lịch tư vấn
+            </a>
+        </article>
+    </section>
+</main>
+<footer>CodePath · Dữ liệu và trung tâm giả lập phục vụ dự án demo.</footer>
+</body>
+</html>

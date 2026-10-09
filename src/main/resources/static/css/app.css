@@ -1,0 +1,252 @@
+:root {
+    font-family: Segoe UI, Arial, sans-serif;
+    color: #18312d;
+    background: #f5f7f4;
+    line-height: 1.6
+}
+
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0
+}
+
+a {
+    color: #126d58
+}
+
+button, input {
+    font: inherit
+}
+
+.navbar {
+    max-width: 1120px;
+    margin: auto;
+    padding: 22px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid #dfe6df
+}
+
+.brand {
+    font-size: 25px;
+    font-weight: 800;
+    text-decoration: none;
+    letter-spacing: -1px
+}
+
+.brand span {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: #687b74
+}
+
+.button {
+    display: inline-block;
+    background: #176c56;
+    color: white;
+    border: 0;
+    border-radius: 9px;
+    padding: 10px 18px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer
+}
+
+.secondary {
+    background: #e5eee8;
+    color: #18312d
+}
+
+.account {
+    display: flex;
+    gap: 12px;
+    align-items: center
+}
+
+.account form {
+    margin: 0
+}
+
+.container {
+    max-width: 1120px;
+    margin: auto;
+    padding: 0 24px 60px
+}
+
+.hero {
+    padding: 58px 0 42px;
+    max-width: 820px
+}
+
+.eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #28765b
+}
+
+h1 {
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.2;
+    letter-spacing: -1px;
+    margin: 16px 0
+}
+
+h2 {
+    font-size: 23px
+}
+
+h3 {
+    font-size: 22px;
+    line-height: 1.3
+}
+
+.hero > p:last-child {
+    color: #64766e;
+    font-size: 17px
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px
+}
+
+.section-title span {
+    color: #687b74;
+    font-size: 14px
+}
+
+.grid {
+    display: grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px
+}
+
+.card {
+    padding: 26px;
+    border: 1px solid #dce5de;
+    background: white;
+    border-radius: 16px
+}
+
+.card > p {
+    color: #60746b
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #eaf2e8;
+    color: #306043;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600
+}
+
+.requirements {
+    border-top: 1px solid #e8ede7;
+    margin-top: 22px;
+    padding-top: 18px;
+    font-size: 14px
+}
+
+.requirements p {
+    margin: 6px 0 0;
+    color: #60746b
+}
+
+footer {
+    text-align: center;
+    color: #738079;
+    padding: 25px;
+    font-size: 13px
+}
+
+.login-wrap {
+    padding: 52px 20px
+}
+
+.login-card {
+    max-width: 440px;
+    margin: auto
+}
+
+.login-card h1 {
+    font-size: 32px
+}
+
+label {
+    display: block;
+    margin: 16px 0 6px;
+    font-weight: 600;
+    font-size: 14px
+}
+
+input {
+    width: 100%;
+    border: 1px solid #bdccc2;
+    border-radius: 8px;
+    padding: 11px;
+    background: #fff
+}
+
+.full {
+    width: 100%;
+    margin-top: 24px
+}
+
+.back {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 14px
+}
+
+.error {
+    background: #fff0ef;
+    color: #a9382d !important;
+    padding: 12px;
+    border-radius: 8px
+}
+
+.empty {
+    padding: 28px;
+    background: #fff;
+    border-radius: 12px
+}
+
+:focus-visible {
+    outline: 3px solid #d8a13b;
+    outline-offset: 3px
+}
+
+@media (max-width: 600px) {
+    .navbar {
+        align-items: flex-start
+    }
+
+    .account {
+        flex-wrap: wrap;
+        justify-content: flex-end
+    }
+
+    .hero {
+        padding-top: 35px
+    }
+
+    .brand span {
+        max-width: 150px
+    }
+
+    .card {
+        padding: 22px
+    }
+}
