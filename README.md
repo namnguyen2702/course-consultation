@@ -2,6 +2,7 @@
 
 Ứng dụng đặt lịch tư vấn lựa chọn khóa học lập trình.
 
+[![Java CI](https://github.com/namnguyen2702/course-consultation/actions/workflows/ci.yml/badge.svg)](https://github.com/namnguyen2702/course-consultation/actions/workflows/ci.yml)
 ## Công nghệ
 
 - Java 17, Spring Boot 4
