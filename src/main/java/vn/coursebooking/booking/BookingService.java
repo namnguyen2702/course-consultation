@@ -108,6 +108,13 @@ public class BookingService {
                     "Bạn đã có lịch tư vấn vào giờ này"
             );
         }
+        var consultant = consultantRepository.findById(slot.getConsultantId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tư vấn viên"));
+        if (!consultant.isActive() || !consultant.canConsultCourse(request.courseId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Tư vấn viên không nhận tư vấn khóa học này");
+        }
+
         BookingEntity entity = new BookingEntity(
                 user.getId(),
                 request.courseId(),

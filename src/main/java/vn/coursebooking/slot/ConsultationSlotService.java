@@ -30,6 +30,7 @@ public class ConsultationSlotService {
         this.bookingRepository = bookingRepository;
     }
 
+    @Transactional
     public ConsultationSlot createSlot(CreateSlotRequest request) {
         checkConsultant(request.consultantId());
 
@@ -61,6 +62,13 @@ public class ConsultationSlotService {
                     HttpStatus.CONFLICT,
                     "Tư vấn viên đã có khung giờ này"
             );
+        }
+
+        var consultant = consultantRepository.findById(request.consultantId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (!consultant.acceptsStartAt(startAt)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Khung giờ phải nằm trong ngày và giờ làm việc đã được duyệt");
         }
 
         ConsultationSlotEntity entity = new ConsultationSlotEntity(

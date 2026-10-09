@@ -16,6 +16,12 @@ public class ConsultantService {
         this.consultantRepository = consultantRepository;
     }
 
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<Consultant> getConsultantsForCourse(Long courseId) {
+        return consultantRepository.findEligibleForCourse(courseId).stream()
+                .map(this::toConsultant).toList();
+    }
+
     public List<Consultant> getAllConsultants() {
         List<ConsultantEntity> entities =
                 consultantRepository.findByActiveTrueOrderByIdAsc();
@@ -49,6 +55,7 @@ public class ConsultantService {
                 entity.getBio()
         );
     }
+
     public Consultant getConsultantById(Long id) {
         ConsultantEntity entity = consultantRepository
                 .findById(id)

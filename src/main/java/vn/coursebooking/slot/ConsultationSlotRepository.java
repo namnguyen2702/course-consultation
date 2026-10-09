@@ -14,6 +14,8 @@ import org.springframework.data.repository.query.Param;
 public interface ConsultationSlotRepository
         extends JpaRepository<ConsultationSlotEntity, Long> {
 
+    List<ConsultationSlotEntity> findByConsultantIdAndStartAtAfterOrderByStartAtAsc(Long consultantId, LocalDateTime now);
+
     boolean existsByConsultantIdAndStartAt(
             Long consultantId,
             LocalDateTime startAt

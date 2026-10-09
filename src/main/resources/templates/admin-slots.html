@@ -7,17 +7,28 @@
   <title>Quản lý khung giờ</title>
 
   <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/admin.js}"></script>
 </head>
 <body>
 <header class="navbar">
-  <a class="brand" th:href="@{/courses}">CodePath</a>
-
-  <a class="button secondary" th:href="@{/admin/consultants}">
-    Tư vấn viên
-  </a>
+    <a class="brand" th:href="@{/courses}">CodePath<span>Tư vấn khóa học lập trình</span></a>
+    <div class="account">
+        <span class="badge">Quản trị viên</span>
+        <a class="button secondary" th:href="@{/courses}">Xem trang khóa học</a>
+        <form th:action="@{/api/auth/logout}" method="post">
+            <button class="button secondary" type="submit">Đăng xuất</button>
+        </form>
+    </div>
 </header>
+<nav class="site-nav" aria-label="Điều hướng quản trị">
+    <a th:href="@{/admin/bookings}">Lịch tư vấn</a>
+    <a th:href="@{/admin/courses}">Khóa học</a>
+    <a th:href="@{/admin/consultants}">Tư vấn viên</a>
+    <a th:href="@{/admin/slots}" aria-current="page">Khung giờ</a>
+    <a th:href="@{/admin/applications}">Duyệt hồ sơ</a>
+</nav>
 
-<main class="container">
+<main class="container admin-workspace">
   <h1>Quản lý khung giờ</h1>
 
   <p>Giờ Việt Nam · Mỗi buổi kéo dài 30 phút.</p>
@@ -33,7 +44,9 @@
      th:text="${errorMessage}">
   </p>
 
-  <section class="card login-card">
+  <details class="create-panel" id="create-panel">
+    <summary class="button">+ Thêm khung giờ</summary>
+    <section class="card create-form">
     <h2>Tạo khung giờ</h2>
 
     <form th:action="@{/admin/slots}"
@@ -74,10 +87,13 @@
         Tạo khung giờ
       </button>
     </form>
-  </section>
 
-  <section class="card login-card">
-    <h2>Xem giờ còn trống</h2>
+    <button class="button secondary" type="button" data-close-create>Đóng form</button>
+    </section>
+</details>
+
+  <section class="card filter-panel">
+    <h2>Xem khung giờ theo tư vấn viên</h2>
 
     <form th:action="@{/admin/slots}" method="get">
       <label for="filterConsultant">Tư vấn viên</label>

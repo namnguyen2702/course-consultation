@@ -64,6 +64,7 @@ public class AdminConsultantPageController {
 
         return "redirect:/admin/consultants";
     }
+
     @GetMapping("/admin/consultants/{id}/edit")
     public String editPage(
             @PathVariable Long id,

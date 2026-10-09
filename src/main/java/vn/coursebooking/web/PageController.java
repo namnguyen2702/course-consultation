@@ -80,7 +80,7 @@ public class PageController {
         model.addAttribute("course", course);
         model.addAttribute(
                 "consultants",
-                consultantService.getAllConsultants()
+                consultantService.getConsultantsForCourse(courseId)
         );
 
         model.addAttribute("selectedConsultantId", consultantId);

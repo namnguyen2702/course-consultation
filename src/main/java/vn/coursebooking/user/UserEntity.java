@@ -52,6 +52,13 @@ public class UserEntity {
         return passwordHash;
     }
 
+    public void approveAsConsultant() {
+        if (!"CUSTOMER".equals(role)) {
+            throw new IllegalStateException("Only a customer can become a consultant");
+        }
+        this.role = "CONSULTANT";
+    }
+
     public String getRole() {
         return role;
     }

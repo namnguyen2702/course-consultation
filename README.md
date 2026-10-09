@@ -155,3 +155,7 @@ Không dùng mật khẩu database demo cho môi trường deploy.
 - Danh sách giờ của admin hiện chỉ hiển thị giờ tương lai còn trống.
 - Chưa có thanh toán, email thông báo hoặc AI.
 - Dữ liệu và trung tâm sử dụng trong demo là giả lập.
+## Đăng ký tư vấn viên
+
+Hỗ trợ đơn chờ duyệt, quyền CONSULTANT, lịch làm việc được duyệt và khu vực tự quản lý lịch.
+Xem [hướng dẫn và cập nhật database](docs/CONSULTANT-REGISTRATION.md).

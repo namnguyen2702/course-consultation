@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Khung giờ của tôi | CodePath</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/admin.js}"></script>
+</head>
+<body>
+<header class="navbar">
+    <a class="brand" th:href="@{/courses}">CodePath<span>Tư vấn khóa học lập trình</span></a>
+    <div class="account">
+        <a class="button secondary" th:href="@{/courses}">Trang khóa học</a>
+        <form th:action="@{/api/auth/logout}" method="post"><button class="button secondary" type="submit">Đăng xuất</button></form>
+    </div>
+</header>
+<nav class="site-nav" aria-label="Điều hướng"><a th:href="@{/consultant/slots}">Khung giờ của tôi</a>
+            <a th:href="@{/consultant/bookings}">Lịch tư vấn của tôi</a>
+            <a th:href="@{/consultant-application}">Hồ sơ đã đăng ký</a></nav>
+<main class="container admin-workspace">
+    <h1>Khung giờ của tôi</h1>
+    <p role="status" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+    <p class="error" role="alert" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+
+    <section class="card">
+        <h2>Lịch làm việc được duyệt</h2>
+        <p><strong th:text="${profile.days()}"></strong> · <span th:text="${profile.from()} + ' – ' + ${profile.until()}"></span> (giờ Việt Nam)</p>
+        <p>Khóa học: <span th:text="${#strings.listJoin(profile.courseNames(), ', ')}"></span></p>
+        <p>Bạn chỉ mở giờ khi chắc chắn có thể nhận khách. Lịch đã có khách đặt không được tự ý ngừng.</p>
+    </section>
+    <details class="create-panel" th:open="${errorMessage != null}">
+        <summary class="button">+ Mở khung giờ nhận tư vấn</summary>
+        <section class="card create-form">
+            <form th:action="@{/consultant/slots}" method="post">
+                <label for="startAt">Ngày giờ bắt đầu</label>
+                <input id="startAt" name="startAt" type="datetime-local" step="1800" th:value="${startAt}" required>
+                <p>Mỗi buổi 30 phút, bắt đầu ở phút 00 hoặc 30 và phải kết thúc trong giờ làm việc được duyệt.</p>
+                <button class="button full" type="submit">Xác nhận có thể nhận lịch</button>
+            </form>
+            <button class="button secondary" type="button" data-close-create>Đóng form</button>
+        </section>
+    </details>
+    <h2>Các khung giờ trong tương lai</h2>
+    <p class="empty" th:if="${#lists.isEmpty(slots)}">Bạn chưa mở khung giờ nào.</p>
+    <div class="grid">
+        <article class="card" th:each="slot : ${slots}">
+            <h3 th:text="${slot.startAt().format(T(java.time.format.DateTimeFormatter).ofPattern('dd/MM/yyyy HH:mm'))}"></h3>
+            <p>Kết thúc: <span th:text="${slot.endAt().toLocalTime()}"></span></p>
+            <span class="badge" th:text="${slot.booked() ? 'Đã có khách đặt' : (slot.active() ? 'Đang nhận lịch' : 'Đã ngừng nhận')}"></span>
+            <form th:if="${slot.active() and !slot.booked()}" th:action="@{/consultant/slots/{id}/deactivate(id=${slot.id()})}" method="post"
+                  onsubmit="return confirm('Ngừng nhận khung giờ này?');">
+                <button class="button secondary" type="submit">Ngừng nhận lịch</button>
+            </form>
+        </article>
+    </div>
+
+</main>
+</body>
+</html>

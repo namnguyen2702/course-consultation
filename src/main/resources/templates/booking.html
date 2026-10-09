@@ -10,9 +10,14 @@
 </head>
 <body>
 <header class="navbar">
-  <a class="brand" th:href="@{/courses}">
-    CodePath
-  </a>
+    <a class="brand" th:href="@{/courses}">CodePath<span>Tư vấn khóa học lập trình</span></a>
+    <div class="account">
+        <a class="button secondary" th:href="@{/courses}">Khóa học</a>
+        <a class="button secondary" th:href="@{/my-bookings}">Lịch của tôi</a>
+        <form th:action="@{/api/auth/logout}" method="post">
+            <button class="button secondary" type="submit">Đăng xuất</button>
+        </form>
+    </div>
 </header>
 
 <main class="container">

@@ -1,4 +1,4 @@
-package vn.coursebooking.booking;
+package booking;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,6 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import vn.coursebooking.booking.BookingRepository;
+import vn.coursebooking.booking.BookingService;
+import vn.coursebooking.booking.CreateBookingRequest;
 import vn.coursebooking.consultant.ConsultantRepository;
 import vn.coursebooking.course.CourseEntity;
 import vn.coursebooking.course.CourseRepository;

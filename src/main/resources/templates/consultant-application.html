@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Đăng ký trở thành tư vấn viên | CodePath</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/admin.js}"></script>
+</head>
+<body>
+<header class="navbar">
+    <a class="brand" th:href="@{/courses}">CodePath<span>Tư vấn khóa học lập trình</span></a>
+    <div class="account">
+        <a class="button secondary" th:href="@{/courses}">Trang khóa học</a>
+        <form th:action="@{/api/auth/logout}" method="post"><button class="button secondary" type="submit">Đăng xuất</button></form>
+    </div>
+</header>
+<nav class="site-nav" aria-label="Điều hướng"><a th:href="@{/courses}">Khóa học</a><a th:href="@{/consultant-application}" aria-current="page">Đăng ký tư vấn viên</a></nav>
+<main class="container admin-workspace">
+    <h1>Đăng ký trở thành tư vấn viên</h1>
+    <p role="status" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+    <p class="error" role="alert" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+
+    <p>Gửi kinh nghiệm, chuyên môn và thời gian có thể làm việc để trung tâm đánh giá. Hồ sơ không tự cấp quyền nhận lịch.</p>
+    <p class="empty" th:if="${user.role == 'ADMIN'}">Tài khoản admin không gửi đơn. Bạn có thể duyệt hồ sơ trong khu vực quản trị.</p>
+    <section class="card" th:if="${registration != null}">
+        <h2>Hồ sơ gần nhất</h2>
+        <span class="badge" th:switch="${registration.status()}">
+            <span th:case="'PENDING'">Đang chờ admin duyệt</span>
+            <span th:case="'APPROVED'">Đã được duyệt</span>
+            <span th:case="'REJECTED'">Đã từ chối</span>
+        </span>
+        <p><strong>Chuyên môn:</strong> <span th:text="${registration.expertise()}"></span></p>
+        <p><strong>Khóa học:</strong> <span th:text="${#strings.listJoin(registration.courseNames(), ', ')}"></span></p>
+        <p><strong>Lịch làm việc:</strong> <span th:text="${registration.workDays()}"></span> ·
+            <span th:text="${registration.availableFrom()} + ' – ' + ${registration.availableUntil()}"></span> (giờ Việt Nam)</p>
+        <p th:if="${registration.reviewNote() != null and !registration.reviewNote().isEmpty()}">
+            <strong>Ý kiến admin:</strong> <span th:text="${registration.reviewNote()}"></span>
+        </p>
+        <div th:if="${registration.status() == 'APPROVED'}">
+            <p>Đăng xuất và đăng nhập lại để nhận quyền tư vấn viên. Sau đó mở từng khung giờ cụ thể bạn cam kết nhận khách.</p>
+            <a class="button" th:if="${user.role == 'CONSULTANT'}" th:href="@{/consultant/slots}">Vào khu vực tư vấn viên</a>
+        </div>
+        <p th:if="${registration.status() == 'PENDING'}">Bạn chưa thể mở khung giờ khi hồ sơ đang chờ duyệt.</p>
+    </section>
+
+    <section class="card application-form" th:if="${user.role == 'CUSTOMER' and (registration == null or registration.status() == 'REJECTED')}">
+        <h2>Thông tin đăng ký</h2>
+        <p>Họ tên: <strong th:text="${user.fullName}"></strong> · Email: <span th:text="${user.email}"></span></p>
+        <form th:action="@{/consultant-application}" th:object="${applicationForm}" method="post">
+            <div class="error" role="alert" th:if="${#fields.hasAnyErrors()}">
+                <p th:each="error : ${#fields.allErrors()}" th:text="${error}"></p>
+            </div>
+            <label for="phone">Số điện thoại liên hệ *</label>
+            <input id="phone" type="tel" th:field="*{phone}" maxlength="20" required>
+            <label for="expertise">Lĩnh vực tư vấn *</label>
+            <input id="expertise" th:field="*{expertise}" maxlength="200" placeholder="Ví dụ: Java, Spring Boot, SQL" required>
+            <label for="experienceYears">Số năm kinh nghiệm *</label>
+            <input id="experienceYears" type="number" th:field="*{experienceYears}" min="0" max="60" required>
+            <label for="bio">Kinh nghiệm và cách bạn có thể hỗ trợ học viên *</label>
+            <textarea id="bio" th:field="*{bio}" rows="5" maxlength="2000" required></textarea>
+            <label for="portfolioUrl">Đường dẫn hồ sơ / GitHub / LinkedIn (không bắt buộc)</label>
+            <input id="portfolioUrl" type="url" th:field="*{portfolioUrl}" maxlength="500" placeholder="https://...">
+            <fieldset class="choice-group">
+                <legend>Khóa học có thể tư vấn *</legend>
+                <p th:if="${#lists.isEmpty(courses)}">Chưa có khóa học đang mở. Vui lòng quay lại sau.</p>
+                <label th:each="course : ${courses}" class="check-choice">
+                    <input type="checkbox" th:field="*{courseIds}" th:value="${course.id()}">
+                    <span th:text="${course.name()}"></span>
+                </label>
+            </fieldset>
+            <fieldset class="choice-group">
+                <legend>Ngày thường có thể làm việc *</legend>
+                <label th:each="day : ${#numbers.sequence(1,7)}" class="check-choice">
+                    <input type="checkbox" th:field="*{workDays}" th:value="${day}">
+                    <span th:text="${day == 7 ? 'Chủ nhật' : 'Thứ ' + (day + 1)}"></span>
+                </label>
+            </fieldset>
+            <div class="two-fields">
+                <div><label for="availableFrom">Từ giờ *</label><input id="availableFrom" type="time" th:field="*{availableFrom}" step="1800" required></div>
+                <div><label for="availableUntil">Đến giờ *</label><input id="availableUntil" type="time" th:field="*{availableUntil}" step="1800" required></div>
+            </div>
+            <p>Giờ Việt Nam. Một khoảng giờ chung cho các ngày đã chọn, không qua đêm. Sau khi duyệt, bạn tự mở từng lịch 30 phút trong khoảng này.</p>
+            <button class="button full" type="submit" th:disabled="${#lists.isEmpty(courses)}">Gửi hồ sơ đăng ký</button>
+        </form>
+    </section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Duyệt hồ sơ tư vấn viên | CodePath</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/admin.js}"></script>
+</head>
+<body>
+<header class="navbar">
+    <a class="brand" th:href="@{/courses}">CodePath<span>Tư vấn khóa học lập trình</span></a>
+    <div class="account">
+        <a class="button secondary" th:href="@{/courses}">Trang khóa học</a>
+        <form th:action="@{/api/auth/logout}" method="post"><button class="button secondary" type="submit">Đăng xuất</button></form>
+    </div>
+</header>
+<nav class="site-nav" aria-label="Điều hướng"><a th:href="@{/admin/bookings}">Lịch tư vấn</a>
+            <a th:href="@{/admin/courses}">Khóa học</a>
+            <a th:href="@{/admin/consultants}">Tư vấn viên</a>
+            <a th:href="@{/admin/slots}">Khung giờ</a>
+            <a th:href="@{/admin/applications}" aria-current="page">Duyệt hồ sơ</a></nav>
+<main class="container admin-workspace">
+    <h1>Duyệt hồ sơ tư vấn viên</h1>
+    <p role="status" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+    <p class="error" role="alert" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+
+    <p>Kiểm tra kinh nghiệm, khóa học có thể tư vấn và lịch làm việc trước khi cấp quyền. Khung giờ nhận khách chưa được tạo tự động.</p>
+    <p class="empty" th:if="${#lists.isEmpty(applications)}">Chưa có hồ sơ đăng ký.</p>
+    <section class="application-list">
+        <details class="card application-review" th:each="registration : ${applications}" th:open="${registration.status() == 'PENDING'}">
+            <summary>
+                <strong th:text="${registration.fullName()}"></strong> · <span th:text="${registration.expertise()}"></span>
+                <span class="badge" th:switch="${registration.status()}">
+                    <span th:case="'PENDING'">Chờ duyệt</span><span th:case="'APPROVED'">Đã duyệt</span><span th:case="'REJECTED'">Từ chối</span>
+                </span>
+            </summary>
+            <p><strong>Email:</strong> <span th:text="${registration.email()}"></span> · <strong>Điện thoại:</strong> <span th:text="${registration.phone()}"></span></p>
+            <p><strong>Kinh nghiệm:</strong> <span th:text="${registration.experienceYears()} + ' năm'"></span></p>
+            <p class="preserve-lines" th:text="${registration.bio()}"></p>
+            <p th:if="${!registration.portfolioUrl().isEmpty()}"><strong>Hồ sơ:</strong>
+                <a th:href="${registration.portfolioUrl()}" th:text="${registration.portfolioUrl()}" target="_blank" rel="noopener noreferrer"></a>
+            </p>
+            <p><strong>Khóa học đăng ký:</strong> <span th:text="${#strings.listJoin(registration.courseNames(), ', ')}"></span></p>
+            <p><strong>Ngày làm việc:</strong> <span th:text="${registration.workDays()}"></span></p>
+            <p><strong>Giờ làm việc:</strong> <span th:text="${registration.availableFrom()} + ' – ' + ${registration.availableUntil()}"></span> (giờ Việt Nam)</p>
+            <p><strong>Gửi lúc:</strong> <span th:text="${registration.createdAt().format(T(java.time.format.DateTimeFormatter).ofPattern('dd/MM/yyyy HH:mm'))}"></span></p>
+            <form th:if="${registration.status() == 'PENDING'}" th:action="@{/admin/applications/{id}/review(id=${registration.id()})}" method="post"
+                  onsubmit="return confirm('Xác nhận xử lý hồ sơ này? Khi duyệt, tài khoản sẽ được cấp quyền tư vấn viên.');">
+                <label th:for="${'decision-' + registration.id()}">Quyết định</label>
+                <select th:id="${'decision-' + registration.id()}" name="decision" required>
+                    <option value="">Chọn quyết định</option><option value="APPROVED">Duyệt và cấp quyền tư vấn viên</option><option value="REJECTED">Từ chối</option>
+                </select>
+                <label th:for="${'note-' + registration.id()}">Ghi chú / Lý do từ chối (bắt buộc khi từ chối)</label>
+                <textarea th:id="${'note-' + registration.id()}" name="note" rows="2" maxlength="500"></textarea>
+                <button class="button" type="submit">Xác nhận</button>
+            </form>
+            <p th:if="${registration.reviewNote() != null}" th:text="${registration.reviewNote()}"></p>
+        </details>
+    </section>
+
+</main>
+</body>
+</html>

@@ -43,7 +43,7 @@ public class AdminCoursePageController {
             ){
             if(bindingResult.hasErrors()){
                 model.addAttribute(
-                        "course",
+                        "courses",
                         courseService.getAllCourses()
                 );
                 return "admin-courses";

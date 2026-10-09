@@ -7,17 +7,28 @@
   <title>Quản lý tư vấn viên</title>
 
   <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/admin.js}"></script>
 </head>
 <body>
 <header class="navbar">
-  <a class="brand" th:href="@{/courses}">CodePath</a>
-
-  <a class="button secondary" th:href="@{/admin/courses}">
-    Quản lý khóa học
-  </a>
+    <a class="brand" th:href="@{/courses}">CodePath<span>Tư vấn khóa học lập trình</span></a>
+    <div class="account">
+        <span class="badge">Quản trị viên</span>
+        <a class="button secondary" th:href="@{/courses}">Xem trang khóa học</a>
+        <form th:action="@{/api/auth/logout}" method="post">
+            <button class="button secondary" type="submit">Đăng xuất</button>
+        </form>
+    </div>
 </header>
+<nav class="site-nav" aria-label="Điều hướng quản trị">
+    <a th:href="@{/admin/bookings}">Lịch tư vấn</a>
+    <a th:href="@{/admin/courses}">Khóa học</a>
+    <a th:href="@{/admin/consultants}" aria-current="page">Tư vấn viên</a>
+    <a th:href="@{/admin/slots}">Khung giờ</a>
+    <a th:href="@{/admin/applications}">Duyệt hồ sơ</a>
+</nav>
 
-<main class="container">
+<main class="container admin-workspace">
   <h1>Quản lý tư vấn viên</h1>
 
   <p role="status"
@@ -25,7 +36,9 @@
      th:text="${successMessage}">
   </p>
 
-  <section class="card login-card">
+  <details class="create-panel" id="create-panel">
+    <summary class="button">+ Thêm tư vấn viên</summary>
+    <section class="card create-form">
     <h2>Thêm tư vấn viên</h2>
 
     <form th:action="@{/admin/consultants}"
@@ -65,7 +78,10 @@
         Thêm tư vấn viên
       </button>
     </form>
-  </section>
+
+    <button class="button secondary" type="button" data-close-create>Đóng form</button>
+    </section>
+</details>
 
   <h2>Tư vấn viên đang hoạt động</h2>
 

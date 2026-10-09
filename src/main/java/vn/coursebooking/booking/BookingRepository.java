@@ -22,6 +22,13 @@ public interface BookingRepository
 
     List<BookingEntity> findAllByOrderByCreatedAtDescIdDesc();
 
+    @Query("""
+        SELECT b FROM BookingEntity b, ConsultationSlotEntity s
+        WHERE b.slotId = s.id AND s.consultantId = :consultantId
+        ORDER BY s.startAt DESC, b.id DESC
+        """)
+    List<BookingEntity> findForConsultant(@Param("consultantId") Long consultantId);
+
     boolean existsBySlotIdAndStatusNot(Long slotId, String status);
 
     List<BookingEntity> findByUserIdOrderByCreatedAtDescIdDesc(Long userId);

@@ -9,10 +9,13 @@
 <body>
 <header class="navbar">
     <a class="brand" th:href="@{/courses}">CodePath<span>Tư vấn khóa học lập trình</span></a>
-    <a th:if="${displayName == null}" class="button" th:href="@{/login}">Đăng nhập</a>
+    <div th:if="${displayName == null}" class="account">
+        <a class="button secondary" th:href="@{/consultant-application}">Trở thành tư vấn viên</a>
+        <a class="button" th:href="@{/login}">Đăng nhập</a>
+    </div>
     <div th:if="${displayName != null}" class="account">
         <span th:text="${displayName}"></span>
-        <span class="badge" th:text="${role == 'ADMIN' ? 'Quản trị viên' : 'Khách hàng'}"></span>
+        <span class="badge" th:text="${role == 'ADMIN' ? 'Quản trị viên' : (role == 'CONSULTANT' ? 'Tư vấn viên' : 'Khách hàng')}"></span>
         <a class="button secondary"
            th:if="${role == 'CUSTOMER'}"
            th:href="@{/my-bookings}">
@@ -38,12 +41,15 @@
            th:href="@{/admin/slots}">
             Khung giờ
         </a>
+        <a class="button secondary" th:if="${role == 'CUSTOMER'}" th:href="@{/consultant-application}">Đăng ký tư vấn viên</a>
+        <a class="button secondary" th:if="${role == 'CONSULTANT'}" th:href="@{/consultant/slots}">Khu vực tư vấn viên</a>
+        <a class="button secondary" th:if="${role == 'ADMIN'}" th:href="@{/admin/applications}">Duyệt hồ sơ</a>
         <form th:action="@{/api/auth/logout}" method="post">
             <button class="button secondary" type="submit">Đăng xuất</button>
         </form>
     </div>
 </header>
-<main class="container">
+<main class="container course-directory">
     <p role="status"
        th:if="${successMessage != null}"
        th:text="${successMessage}">
@@ -51,8 +57,13 @@
     </p>
     <section class="hero">
         <p class="eyebrow">BẮT ĐẦU TỪ MỤC TIÊU CỦA BẠN</p>
-        <h1>Chọn khóa học phù hợp.<br>Xây nền tảng cho bước tiếp theo.</h1>
-        <p>Tìm hiểu nội dung và kiến thức đầu vào trước khi trao đổi với tư vấn viên.</p>
+        <h1>Chọn khóa học.<br>Trao đổi trước khi bắt đầu.</h1>
+        <p>Xem nội dung khóa học, chọn tư vấn viên và đặt một buổi trao đổi phù hợp với thời gian của bạn.</p>
+        <ol class="intro-steps" aria-label="Các bước đặt lịch">
+            <li><strong>01.</strong> Chọn khóa học</li>
+            <li><strong>02.</strong> Chọn tư vấn viên</li>
+            <li><strong>03.</strong> Đặt khung giờ</li>
+        </ol>
     </section>
     <div class="section-title"><h2>Khóa học đang mở</h2><span th:text="${#lists.size(courses)} + ' khóa học'"></span>
     </div>

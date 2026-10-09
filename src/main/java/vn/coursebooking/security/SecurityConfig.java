@@ -20,7 +20,7 @@ public class SecurityConfig {
                         "/courses",
                         "/login",
                         "/register",
-                        "/css/**"
+                        "/css/**", "/js/**"
                 ).permitAll()
 
                 .requestMatchers(
@@ -49,6 +49,7 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/admin/**", "/admin/**")
                 .hasRole("ADMIN")
+                .requestMatchers("/consultant/**").hasRole("CONSULTANT")
                 .anyRequest().authenticated()
         );
 
@@ -59,7 +60,9 @@ public class SecurityConfig {
                         {
                             if (request.getHeader("Accept") != null
                                     && request.getHeader("Accept").contains("text/html")) {
-                                response.sendRedirect("/courses");
+                                boolean consultant = authentication.getAuthorities().stream()
+                                        .anyMatch(authority -> authority.getAuthority().equals("ROLE_CONSULTANT"));
+                                response.sendRedirect(consultant ? "/consultant/slots" : "/courses");
                             } else {
                                 response.setStatus(204);
                             }
@@ -102,9 +105,15 @@ public class SecurityConfig {
                             }
                         }
                 )
-                .accessDeniedHandler((request, response, exception) ->
-                        response.setStatus(403)
-                )
+                .accessDeniedHandler((request, response, exception) -> {
+                    if (!request.getRequestURI().startsWith("/api/")
+                            && request.getHeader("Accept") != null
+                            && request.getHeader("Accept").contains("text/html")) {
+                        response.sendError(403);
+                    } else {
+                        response.setStatus(403);
+                    }
+                })
         );
 
         return http.build();

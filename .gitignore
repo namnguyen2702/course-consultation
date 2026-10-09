@@ -19,3 +19,5 @@ application-local.properties
 # File hệ điều hành
 Thumbs.db
 .DS_Store
+# Local database backups (may contain account data)
+.local-backups/

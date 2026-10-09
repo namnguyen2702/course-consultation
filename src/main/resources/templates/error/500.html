@@ -4,21 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Không có quyền truy cập</title>
+  <title>Có lỗi xảy ra</title>
 
   <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <main class="login-wrap">
   <section class="card login-card">
-    <p class="eyebrow">LỖI 403</p>
+    <p class="eyebrow">LỖI 500</p>
 
-    <h1>Không có quyền truy cập</h1>
+    <h1>Chưa thể xử lý yêu cầu</h1>
 
-    <p>
-      Tài khoản hiện tại không có quyền thực hiện yêu cầu này,
-      hoặc thông tin bảo vệ phiên không còn hợp lệ.
-    </p>
+    <p>Hệ thống gặp lỗi khi xử lý yêu cầu. Vui lòng quay lại trang khóa học và thử sau.</p>
 
     <a class="button" th:href="@{/courses}">
       Về trang khóa học

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lịch tư vấn của tôi | CodePath</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/admin.js}"></script>
+</head>
+<body>
+<header class="navbar">
+    <a class="brand" th:href="@{/courses}">CodePath<span>Tư vấn khóa học lập trình</span></a>
+    <div class="account">
+        <a class="button secondary" th:href="@{/courses}">Trang khóa học</a>
+        <form th:action="@{/api/auth/logout}" method="post"><button class="button secondary" type="submit">Đăng xuất</button></form>
+    </div>
+</header>
+<nav class="site-nav" aria-label="Điều hướng"><a th:href="@{/consultant/slots}">Khung giờ của tôi</a>
+            <a th:href="@{/consultant/bookings}">Lịch tư vấn của tôi</a>
+            <a th:href="@{/consultant-application}">Hồ sơ đã đăng ký</a></nav>
+<main class="container admin-workspace">
+    <h1>Lịch tư vấn của tôi</h1>
+    <p role="status" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+    <p class="error" role="alert" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+
+    <p>Chỉ hiển thị lịch khách đã đặt với bạn. Kết quả chỉ được cập nhật sau khi buổi tư vấn kết thúc.</p>
+    <p class="empty" th:if="${#lists.isEmpty(bookings)}">Chưa có khách đặt lịch với bạn.</p>
+    <div class="grid">
+        <article class="card" th:each="booking : ${bookings}">
+            <h3 th:text="${booking.customerName()}"></h3>
+            <p th:text="${booking.customerEmail()}"></p>
+            <p><strong th:text="${booking.courseName()}"></strong></p>
+            <p th:text="${booking.startAt().format(T(java.time.format.DateTimeFormatter).ofPattern('dd/MM/yyyy HH:mm'))}"></p>
+            <span class="badge" th:switch="${booking.status()}">
+                <span th:case="'CONFIRMED'">Đã xác nhận</span><span th:case="'CANCELLED'">Đã hủy</span>
+                <span th:case="'COMPLETED'">Hoàn thành</span><span th:case="'NO_SHOW'">Khách vắng mặt</span>
+            </span>
+            <form th:if="${booking.status() == 'CONFIRMED'}" th:action="@{/consultant/bookings/{id}/status(id=${booking.id()})}" method="post"
+                  onsubmit="return confirm('Ghi nhận kết quả buổi tư vấn này?');">
+                <label th:for="${'result-' + booking.id()}">Kết quả</label>
+                <select th:id="${'result-' + booking.id()}" name="status" required>
+                    <option value="">Chọn kết quả</option><option value="COMPLETED">Hoàn thành</option><option value="NO_SHOW">Khách vắng mặt</option>
+                </select>
+                <button class="button" type="submit">Lưu kết quả</button>
+            </form>
+        </article>
+    </div>
+
+</main>
+</body>
+</html>
