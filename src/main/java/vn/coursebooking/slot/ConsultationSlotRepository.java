@@ -1,9 +1,13 @@
 package vn.coursebooking.slot;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -33,5 +37,10 @@ public interface ConsultationSlotRepository
     findByConsultantIdAndActiveTrueAndStartAtAfterOrderByStartAtAsc(
             @Param("consultantId") Long consultantId,
             @Param("now") LocalDateTime now
+    );
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT slot FROM ConsultationSlotEntity slot WHERE slot.id = :id")
+    Optional<ConsultationSlotEntity> findForUpdate(
+            @Param("id") Long id
     );
 }

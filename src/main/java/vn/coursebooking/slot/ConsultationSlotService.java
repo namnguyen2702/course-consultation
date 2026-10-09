@@ -1,9 +1,11 @@
 package vn.coursebooking.slot;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import vn.coursebooking.booking.BookingRepository;
 import vn.coursebooking.consultant.ConsultantRepository;
 
 import java.time.LocalDateTime;
@@ -16,13 +18,16 @@ public class ConsultationSlotService {
 
     private final ConsultationSlotRepository slotRepository;
     private final ConsultantRepository consultantRepository;
+    private final BookingRepository bookingRepository;
 
     public ConsultationSlotService(
             ConsultationSlotRepository slotRepository,
-            ConsultantRepository consultantRepository
+            ConsultantRepository consultantRepository,
+            BookingRepository bookingRepository
     ) {
         this.slotRepository = slotRepository;
         this.consultantRepository = consultantRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     public ConsultationSlot createSlot(CreateSlotRequest request) {
@@ -115,5 +120,38 @@ public class ConsultationSlotService {
                 entity.getStartAt(),
                 entity.getStartAt().plusMinutes(30)
         );
+    }
+    @Transactional
+    public Long deactivateSlot(Long id) {
+        ConsultationSlotEntity slot = slotRepository
+                .findForUpdate(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy khung giờ"
+                ));
+
+        if (bookingRepository.existsBySlotIdAndStatusNot(
+                id,
+                "CANCELLED"
+        )) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Không thể ngừng khung giờ đã có lịch đặt"
+            );
+        }
+
+        if (!slot.getStartAt().isAfter(
+                LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"))
+        )) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Chỉ ngừng nhận khung giờ trong tương lai"
+            );
+        }
+
+        slot.deactivate();
+        slotRepository.saveAndFlush(slot);
+
+        return slot.getConsultantId();
     }
 }

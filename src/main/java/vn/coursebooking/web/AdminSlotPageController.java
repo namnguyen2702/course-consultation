@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.coursebooking.consultant.ConsultantService;
@@ -97,5 +94,32 @@ public class AdminSlotPageController {
         model.addAttribute("selectedConsultantId", null);
 
         return "admin-slots";
+    }
+    @PostMapping("/admin/slots/{id}/deactivate")
+    public String deactivateSlot(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            Long consultantId = slotService.deactivateSlot(id);
+
+            redirectAttributes.addAttribute(
+                    "consultantId",
+                    consultantId
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Đã ngừng nhận khung giờ."
+            );
+
+        } catch (ResponseStatusException exception) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    exception.getReason()
+            );
+        }
+
+        return "redirect:/admin/slots";
     }
 }

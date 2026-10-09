@@ -46,4 +46,7 @@ public class ConsultationSlotEntity {
     public boolean isActive() {
         return active;
     }
+    public void deactivate(){
+        this.active = false;
+    }
 }

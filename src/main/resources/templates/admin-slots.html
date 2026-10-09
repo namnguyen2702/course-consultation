@@ -118,6 +118,14 @@
           Kết thúc:
           <span th:text="${slot.endAt().toLocalTime()}"></span>
         </p>
+        <form th:action="@{/admin/slots/{id}/deactivate(id=${slot.id()})}"
+              method="post"
+              onsubmit="return confirm('Ngừng nhận lịch cho khung giờ này?');">
+
+          <button class="button secondary" type="submit">
+            Ngừng nhận lịch
+          </button>
+        </form>
       </article>
     </div>
   </section>
