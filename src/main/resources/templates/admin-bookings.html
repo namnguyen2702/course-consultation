@@ -15,6 +15,16 @@
 </header>
 
 <main class="container">
+  <p role="status"
+     th:if="${successMessage != null}"
+     th:text="${successMessage}">
+  </p>
+
+  <p class="error"
+     role="alert"
+     th:if="${errorMessage != null}"
+     th:text="${errorMessage}">
+  </p>
   <section class="hero">
     <h1>Quản lý lịch tư vấn</h1>
     <p>Danh sách lịch của tất cả khách hàng · Giờ Việt Nam.</p>
@@ -64,6 +74,29 @@
                 <span th:case="'NO_SHOW'">Vắng mặt</span>
                 <span th:case="*" th:text="${booking.status()}"></span>
             </span>
+      <form th:if="${booking.status() == 'CONFIRMED'}"
+            th:action="@{/admin/bookings/{id}/status(id=${booking.id()})}"
+            method="post"
+            onsubmit="return confirm('Bạn có chắc muốn ghi nhận kết quả này?');">
+
+        <label th:for="${'status-' + booking.id()}">
+          Kết quả buổi tư vấn
+        </label>
+
+        <select th:id="${'status-' + booking.id()}"
+                name="status"
+                required>
+          <option value="">Chọn kết quả</option>
+          <option value="COMPLETED">Đã hoàn thành</option>
+          <option value="NO_SHOW">Khách vắng mặt</option>
+        </select>
+
+        <p>Chỉ cập nhật sau khi buổi tư vấn kết thúc.</p>
+
+        <button class="button" type="submit">
+          Lưu kết quả
+        </button>
+      </form>
     </article>
   </section>
 
