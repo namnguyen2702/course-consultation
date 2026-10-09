@@ -2,10 +2,13 @@ package vn.coursebooking.booking;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface BookingRepository
         extends JpaRepository<BookingEntity, Long> {
@@ -22,4 +25,17 @@ public interface BookingRepository
     boolean existsBySlotIdAndStatusNot(Long slotId, String status);
 
     List<BookingEntity> findByUserIdOrderByCreatedAtDescIdDesc(Long userId);
+
+    @Query("""
+    SELECT COUNT(booking)
+    FROM BookingEntity booking, ConsultationSlotEntity slot
+    WHERE booking.slotId = slot.id
+      AND booking.userId = :userId
+      AND booking.status <> 'CANCELLED'
+      AND slot.startAt = :startAt
+    """)
+    long countBookingsAtTime(
+            @Param("userId") Long userId,
+            @Param("startAt") LocalDateTime startAt
+    );
 }

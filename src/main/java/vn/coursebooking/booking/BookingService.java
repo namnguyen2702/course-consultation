@@ -46,7 +46,12 @@ public class BookingService {
             String email,
             CreateBookingRequest request
     ) {
-        UserEntity user = getUser(email);
+        UserEntity user = userRepository
+                .findByEmailForUpdate(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Tài khoản không còn tồn tại"
+                ));
 
         if (!"CUSTOMER".equals(user.getRole())) {
             throw new ResponseStatusException(
@@ -94,7 +99,15 @@ public class BookingService {
                     "Khung giờ đã được đặt"
             );
         }
-
+        if (bookingRepository.countBookingsAtTime(
+                user.getId(),
+                slot.getStartAt()
+        ) > 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Bạn đã có lịch tư vấn vào giờ này"
+            );
+        }
         BookingEntity entity = new BookingEntity(
                 user.getId(),
                 request.courseId(),
