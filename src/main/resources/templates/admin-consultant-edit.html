@@ -28,7 +28,7 @@
   <section class="card login-card">
     <h2>Thêm tư vấn viên</h2>
 
-    <form th:action="@{/admin/consultants}"
+    <form th:action="@{/admin/consultants/{id}/edit(id=${consultantId})}"
           th:object="${consultantForm}"
           method="post"
           onsubmit="this.querySelector('button[type=submit]').disabled = true;">
@@ -62,35 +62,15 @@
                 rows="4"></textarea>
 
       <button class="button full" type="submit">
-        Thêm tư vấn viên
+        Sửa tư vấn viên
       </button>
+      <a class="back" th:href="@{/admin/consultants}">
+        ← Quay lại danh sách tư vấn viên
+      </a>
     </form>
   </section>
 
-  <h2>Tư vấn viên đang hoạt động</h2>
 
-  <p class="empty"
-     th:if="${#lists.isEmpty(consultants)}">
-    Chưa có tư vấn viên đang hoạt động.
-  </p>
-
-  <section class="grid">
-    <article class="card"
-             th:each="consultant : ${consultants}">
-
-      <h3 th:text="${consultant.fullName()}"></h3>
-
-      <span class="badge"
-            th:text="${consultant.expertise()}">
-      </span>
-
-      <p th:text="${consultant.bio()}"></p>
-      <a class="button secondary"
-         th:href="@{/admin/consultants/{id}/edit(id=${consultant.id()})}">
-        Sửa
-      </a>
-    </article>
-  </section>
 </main>
 </body>
 </html>

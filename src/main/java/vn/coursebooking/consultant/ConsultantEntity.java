@@ -46,4 +46,13 @@ public class ConsultantEntity {
     public String getBio() {
         return bio;
     }
+    public void updateInfo(
+            String fullName,
+            String expertise,
+            String bio
+    ) {
+        this.fullName = fullName;
+        this.expertise = expertise;
+        this.bio = bio;
+    }
 }
