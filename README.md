@@ -1,89 +1,156 @@
-# Đặt lịch tư vấn lựa chọn khóa học lập trình
+# Course Consultation
 
-Dự án học backend Java qua từng bước. Phiên bản hiện tại là bài 01:
-API đọc danh sách khóa học, dùng dữ liệu demo trong bộ nhớ.
-Chưa có database, tài khoản, booking hoặc AI.
+Ứng dụng đặt lịch tư vấn lựa chọn khóa học lập trình.
 
-## Công cụ và cách chạy
+## Công nghệ
 
-- JDK 17 hoặc 21; bước này dùng JDK 17 đã có trên máy.
-- IntelliJ IDEA và Maven (máy hiện có Maven 3.9.9).
-- Postman hoặc trình duyệt để thử GET API.
+- Java 17, Spring Boot 4
+- Spring MVC, Thymeleaf, HTML/CSS
+- Spring Security: đăng nhập bằng session, phân quyền, CSRF
+- Spring Data JPA, PostgreSQL 17
+- Docker Compose
+- JUnit, Mockito, MockMvc
+- Maven
 
-Trong IntelliJ: mở thư mục dự án, chọn mở như Maven project nếu được hỏi.
-Đặt Project SDK và Maven Runner JRE thành JDK 17.
-Đợi Maven tải thư viện, chạy `CourseConsultationApplication.main()`.
+## Chức năng
 
-Hoặc từ PowerShell ở thư mục dự án:
+### Khách hàng
+
+- Đăng ký, đăng nhập, đăng xuất.
+- Xem khóa học và tư vấn viên.
+- Chọn khung giờ còn trống và đặt lịch.
+- Xem lịch đã đặt.
+- Hủy lịch trước giờ bắt đầu ít nhất 2 giờ.
+
+### Admin
+
+- Thêm, sửa và ngừng mở khóa học.
+- Thêm, sửa hồ sơ tư vấn viên.
+- Tạo và ngừng nhận khung giờ chưa được đặt.
+- Xem lịch của tất cả khách hàng.
+- Ghi nhận hoàn thành hoặc vắng mặt sau khi buổi tư vấn kết thúc.
+
+## Quy định đặt lịch
+
+- Mỗi buổi kéo dài 30 phút, bắt đầu ở phút 00 hoặc 30.
+- Chỉ được đặt khung giờ đang hoạt động và nằm trong tương lai.
+- Một khung giờ chỉ có một booking chưa hủy.
+- Một khách hàng không được đặt nhiều lịch cùng giờ.
+- Khách hàng chỉ được hủy lịch của mình.
+- Ngừng mở khóa học không xóa lịch sử booking.
+
+## Chạy trên máy local
+
+Yêu cầu: JDK 17, Maven và Docker Desktop đang chạy.
+
+### 1. Chuẩn bị cấu hình
+
+Tại thư mục gốc dự án, chạy trong PowerShell:
 
 ```powershell
-$env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
+Copy-Item src/main/resources/application-local.properties.example src/main/resources/application-local.properties
+```
+
+Chỉ sao chép khi chưa có file local để tránh ghi đè cấu hình riêng.
+
+### 2. Khởi động PostgreSQL
+
+```powershell
+docker compose up -d
+docker compose logs postgres
+```
+
+Chờ PostgreSQL sẵn sàng nhận kết nối.
+
+Khi volume dữ liệu mới được khởi tạo, PostgreSQL chạy
+`database/schema.sql` để tạo bảng và ràng buộc.
+
+File này không tự chạy lại trên volume đã có dữ liệu.
+Nó không chứa tài khoản hoặc dữ liệu mẫu.
+
+### 3. Chạy ứng dụng
+
+```powershell
 mvn spring-boot:run
 ```
 
-JAVA_HOME ở trên chỉ thay đổi cho terminal hiện tại. Lần đầu Maven cần Internet.
-Nếu cổng 8080 đang được dùng, chạy với cổng khác:
+Mở:
+
+- Trang khóa học: http://localhost:8082/courses
+- Đăng ký: http://localhost:8082/register
+- Đăng nhập: http://localhost:8082/login
+
+Profile mặc định là `local`.
+
+## Tạo tài khoản admin ở môi trường local mới
+
+1. Đăng ký tài khoản tại `/register` bằng email do bạn chọn.
+2. Mở PostgreSQL:
 
 ```powershell
-mvn spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"
+docker compose exec postgres psql -U course_user -d course_consultation
 ```
 
-## Bài 01: đọc hiểu luồng API
+3. Thay email trong câu lệnh bằng email vừa đăng ký:
 
-Mở http://localhost:8080/api/courses hoặc tạo request GET cùng URL trong Postman.
-Kết quả mong đợi: HTTP 200, một mảng JSON gồm ba khóa học.
-Trang gốc `/` chưa có giao diện nên có thể trả về 404.
+```sql
+UPDATE users
+SET role = 'ADMIN'
+WHERE email = 'admin@example.com';
 
-Luồng xử lý:
-
-```text
-Trình duyệt/Postman
-    -> GET /api/courses
-    -> CourseController.getAllCourses()
-    -> CourseService.getAllCourses()
-    -> List<Course>
-    -> Spring chuyển thành JSON và trả HTTP response
+SELECT id, full_name, email, role
+FROM users
+WHERE email = 'admin@example.com';
 ```
 
-Đọc code theo thứ tự:
+Lệnh UPDATE phải cập nhật đúng một dòng.
 
-1. `CourseConsultationApplication`: điểm khởi động. `@SpringBootApplication`
-   bật cấu hình tự động và tìm các thành phần Spring trong package này và package con.
-2. `Course`: hình dạng dữ liệu của một khóa học. `record` là kiểu dữ liệu Java
-   tự tạo constructor, các phương thức đọc như `name()`, cùng equals/hashCode/toString.
-   Ta chưa cần viết nhiều getter/setter cho dữ liệu chỉ đọc ở bài này.
-3. `CourseService`: nơi cung cấp dữ liệu và sau này xử lý nghiệp vụ.
-   `@Service` giúp Spring tạo và quản lý đối tượng này.
-4. `CourseController`: tiếp nhận HTTP request. `@RequestMapping` đặt đường dẫn,
-   `@GetMapping` chọn phương thức GET. `@RestController` cho phép trả dữ liệu trong response.
-   Spring truyền Service vào constructor; không cần tự gọi `new CourseService()`.
-5. `pom.xml`: danh sách thư viện và cấu hình build. Maven tải thư viện;
-   không cần tải từng file JAR. Starter Web MVC cung cấp các thành phần cho HTTP API.
-6. `application.properties`: tên ứng dụng và cổng chạy.
+4. Thoát psql bằng `\q`.
+5. Đăng xuất rồi đăng nhập lại để phiên nhận quyền mới.
 
-Controller tập trung vào HTTP; Service tập trung vào dữ liệu/nghiệp vụ.
-Ở bài này Service rất ngắn để thấy rõ hai trách nhiệm trước khi thêm database.
-`List.of` tạo danh sách không sửa trực tiếp được: chưa thể thêm khóa bằng POST.
+Chỉ người quản lý database thực hiện việc cấp quyền admin.
+Form đăng ký thông thường luôn tạo tài khoản CUSTOMER.
 
-## Tự thực hành
+Admin có thể tạo khóa học, tư vấn viên và khung giờ trên website.
 
-1. Thêm khóa thứ tư vào `List.of`, dùng id mới, rồi khởi động lại ứng dụng.
-2. Gọi GET và kiểm tra khóa vừa thêm.
-3. Đổi `durationWeeks` của một khóa và kiểm tra JSON.
-4. Thử GET `/api/course` (thiếu chữ s) và quan sát HTTP 404.
+## Chạy test
 
-Bạn hiểu bài khi giải thích được vì sao URL gọi đúng Controller,
-Service được tạo ở đâu, và tại sao kết quả Java trở thành JSON.
+```powershell
+mvn test
+```
 
-## Các bước tiếp theo
+Các test hiện kiểm tra:
 
-1. PostgreSQL + Repository: thay dữ liệu trong bộ nhớ bằng dữ liệu trong bảng.
-2. Chi tiết khóa học và lỗi 404 khi id không tồn tại.
-3. Tài khoản, mật khẩu được hash, phân quyền khách/tư vấn viên/admin.
-4. Khung giờ và booking: đặt/hủy, transaction và chống trùng lịch.
-5. Chat hỏi đáp dựa trên tài liệu, có nguồn; kiểm soát timeout và lượt sử dụng.
-6. Giao diện demo, tài liệu API và triển khai.
+- Từ chối khung giờ đã được đặt.
+- Từ chối khách hàng đặt nhiều lịch cùng giờ.
+- Từ chối hủy lịch không thuộc khách hàng.
+- Từ chối hủy khi còn dưới 2 giờ.
+- Phân quyền HTTP và kiểm tra CSRF.
 
-Làm từng bước có thể chạy và giải thích được. Dùng một ứng dụng chia theo chức năng.
-Viết test cho nghiệp vụ có nguy cơ sai như phân quyền và booking đồng thời.
-Không commit API key hoặc mật khẩu thật. Dữ liệu hiện tại hoàn toàn là dữ liệu demo.
+Test sử dụng service hoặc repository giả.
+Chưa kiểm thử tích hợp việc khóa và ràng buộc trên PostgreSQL thật.
+
+## Cấu hình deploy
+
+Chọn profile `prod` và cung cấp biến môi trường:
+
+- `SPRING_PROFILES_ACTIVE=prod`
+- `DB_URL`: JDBC URL của PostgreSQL
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `PORT`: tùy chọn, mặc định 8082
+
+Profile prod yêu cầu HTTPS để trình duyệt gửi cookie đăng nhập.
+
+Database deploy phải được tạo cấu trúc trước khi chạy ứng dụng.
+Hibernate dùng `ddl-auto=validate`, không tự tạo bảng.
+
+Không dùng mật khẩu database demo cho môi trường deploy.
+
+## Phạm vi hiện tại
+
+- Tư vấn viên là hồ sơ do admin quản lý, chưa có tài khoản riêng.
+- Tư vấn viên chưa được phân công theo từng khóa học.
+- Danh sách giờ của admin hiện chỉ hiển thị giờ tương lai còn trống.
+- Chưa có thanh toán, email thông báo hoặc AI.
+- Dữ liệu và trung tâm sử dụng trong demo là giả lập.
