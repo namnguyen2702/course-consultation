@@ -28,6 +28,16 @@
            th:href="@{/admin/courses}">
             Quản lý khóa học
         </a>
+        <a class="button secondary"
+           th:if="${role == 'ADMIN'}"
+           th:href="@{/admin/consultants}">
+            Tư vấn viên
+        </a>
+        <a class="button secondary"
+           th:if="${role == 'ADMIN'}"
+           th:href="@{/admin/slots}">
+            Khung giờ
+        </a>
         <form th:action="@{/api/auth/logout}" method="post">
             <button class="button secondary" type="submit">Đăng xuất</button>
         </form>

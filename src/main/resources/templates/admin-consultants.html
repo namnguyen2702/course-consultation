@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Quản lý tư vấn viên</title>
+
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="navbar">
+  <a class="brand" th:href="@{/courses}">CodePath</a>
+
+  <a class="button secondary" th:href="@{/admin/courses}">
+    Quản lý khóa học
+  </a>
+</header>
+
+<main class="container">
+  <h1>Quản lý tư vấn viên</h1>
+
+  <p role="status"
+     th:if="${successMessage != null}"
+     th:text="${successMessage}">
+  </p>
+
+  <section class="card login-card">
+    <h2>Thêm tư vấn viên</h2>
+
+    <form th:action="@{/admin/consultants}"
+          th:object="${consultantForm}"
+          method="post"
+          onsubmit="this.querySelector('button[type=submit]').disabled = true;">
+
+      <div class="error"
+           role="alert"
+           th:if="${#fields.hasAnyErrors()}">
+        <p th:each="error : ${#fields.allErrors()}"
+           th:text="${error}">
+        </p>
+      </div>
+
+      <label for="fullName">Họ tên</label>
+      <input id="fullName"
+             type="text"
+             th:field="*{fullName}"
+             maxlength="100"
+             required>
+
+      <label for="expertise">Lĩnh vực tư vấn</label>
+      <input id="expertise"
+             type="text"
+             th:field="*{expertise}"
+             maxlength="200"
+             required>
+
+      <label for="bio">Giới thiệu</label>
+      <textarea id="bio"
+                th:field="*{bio}"
+                maxlength="2000"
+                rows="4"></textarea>
+
+      <button class="button full" type="submit">
+        Thêm tư vấn viên
+      </button>
+    </form>
+  </section>
+
+  <h2>Tư vấn viên đang hoạt động</h2>
+
+  <p class="empty"
+     th:if="${#lists.isEmpty(consultants)}">
+    Chưa có tư vấn viên đang hoạt động.
+  </p>
+
+  <section class="grid">
+    <article class="card"
+             th:each="consultant : ${consultants}">
+
+      <h3 th:text="${consultant.fullName()}"></h3>
+
+      <span class="badge"
+            th:text="${consultant.expertise()}">
+      </span>
+
+      <p th:text="${consultant.bio()}"></p>
+    </article>
+  </section>
+</main>
+</body>
+</html>
