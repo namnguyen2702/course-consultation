@@ -48,13 +48,13 @@
       </p>
 
       <p>
-        Mã khóa học:
-        <span th:text="${booking.courseId()}"></span>
+        Khóa học:
+        <strong th:text="${booking.courseName()}"></strong>
       </p>
 
       <p>
-        Mã tư vấn viên:
-        <span th:text="${booking.consultantId()}"></span>
+        Tư vấn viên:
+        <span th:text="${booking.consultantName()}"></span>
       </p>
 
       <p th:text="${booking.startAt().format(

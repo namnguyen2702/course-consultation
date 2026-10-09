@@ -226,12 +226,36 @@ public class BookingService {
     }
 
     private AdminBooking toAdminBooking(BookingEntity entity) {
-        UserEntity user = userRepository.findById(entity.getUserId()).orElseThrow();
-        ConsultationSlotEntity slot = slotRepository.findById(entity.getSlotId()).orElseThrow();
-        return new AdminBooking(entity.getId(), user.getFullName(), user.getEmail(),
-                entity.getCourseId(), slot.getConsultantId(), entity.getSlotId(),
-                slot.getStartAt(), slot.getStartAt().plusMinutes(30),
-                entity.getStatus(), entity.getCreatedAt());
+        UserEntity user = userRepository
+                .findById(entity.getUserId())
+                .orElseThrow();
+
+        ConsultationSlotEntity slot = slotRepository
+                .findById(entity.getSlotId())
+                .orElseThrow();
+
+        var course = courseRepository
+                .findById(entity.getCourseId())
+                .orElseThrow();
+
+        var consultant = consultantRepository
+                .findById(slot.getConsultantId())
+                .orElseThrow();
+
+        return new AdminBooking(
+                entity.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                entity.getCourseId(),
+                slot.getConsultantId(),
+                entity.getSlotId(),
+                slot.getStartAt(),
+                slot.getStartAt().plusMinutes(30),
+                entity.getStatus(),
+                entity.getCreatedAt(),
+                course.getName(),
+                consultant.getFullName()
+        );
     }
 
     private UserEntity getUser(String email) {
