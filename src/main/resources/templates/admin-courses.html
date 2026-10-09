@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Quản lý khóa học</title>
+
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="navbar">
+  <a class="brand" th:href="@{/courses}">CodePath</a>
+  <a class="button secondary" th:href="@{/admin/bookings}">
+    Quản lý lịch
+  </a>
+</header>
+
+<main class="container">
+  <h1>Quản lý khóa học</h1>
+
+  <p role="status"
+     th:if="${successMessage != null}"
+     th:text="${successMessage}">
+  </p>
+
+  <section class="card login-card">
+    <h2>Thêm khóa học</h2>
+
+    <form th:action="@{/admin/courses}"
+          th:object="${courseForm}"
+          method="post">
+
+      <div class="error"
+           role="alert"
+           th:if="${#fields.hasAnyErrors()}">
+        <p th:each="error : ${#fields.allErrors()}"
+           th:text="${error}">
+        </p>
+      </div>
+
+      <label for="name">Tên khóa học</label>
+      <input id="name"
+             type="text"
+             th:field="*{name}"
+             maxlength="150"
+             required>
+
+      <label for="description">Mô tả</label>
+      <textarea id="description"
+                th:field="*{description}"
+                rows="4"></textarea>
+
+      <label for="prerequisites">Kiến thức đầu vào</label>
+      <textarea id="prerequisites"
+                th:field="*{prerequisites}"
+                rows="3"></textarea>
+
+      <label for="durationWeeks">Số tuần học</label>
+      <input id="durationWeeks"
+             type="number"
+             th:field="*{durationWeeks}"
+             min="1"
+             required>
+
+      <button class="button full" type="submit">
+        Thêm khóa học
+      </button>
+    </form>
+  </section>
+
+  <h2>Khóa học đang mở</h2>
+
+  <p class="empty" th:if="${#lists.isEmpty(courses)}">
+    Chưa có khóa học đang mở.
+  </p>
+
+  <section class="grid">
+    <article class="card" th:each="course : ${courses}">
+      <h3 th:text="${course.name()}"></h3>
+      <p th:text="${course.description()}"></p>
+      <p th:text="${course.prerequisites()}"></p>
+
+      <span class="badge"
+            th:text="${course.durationWeeks()} + ' tuần'">
+            </span>
+    </article>
+  </section>
+</main>
+</body>
+</html>

@@ -23,6 +23,11 @@
            th:href="@{/admin/bookings}">
             Quản lý lịch
         </a>
+        <a class="button secondary"
+           th:if="${role == 'ADMIN'}"
+           th:href="@{/admin/courses}">
+            Quản lý khóa học
+        </a>
         <form th:action="@{/api/auth/logout}" method="post">
             <button class="button secondary" type="submit">Đăng xuất</button>
         </form>
