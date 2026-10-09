@@ -2,6 +2,7 @@ package vn.coursebooking.slot;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,7 @@ public record CreateSlotRequest(
         Long consultantId,
 
         @NotNull(message = "Cần nhập giờ bắt đầu")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         LocalDateTime startAt
 ) {
 }

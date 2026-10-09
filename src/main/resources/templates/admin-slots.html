@@ -1,10 +1,126 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Quản lý khung giờ</title>
+
+  <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
-$END$
+<header class="navbar">
+  <a class="brand" th:href="@{/courses}">CodePath</a>
+
+  <a class="button secondary" th:href="@{/admin/consultants}">
+    Tư vấn viên
+  </a>
+</header>
+
+<main class="container">
+  <h1>Quản lý khung giờ</h1>
+
+  <p>Giờ Việt Nam · Mỗi buổi kéo dài 30 phút.</p>
+
+  <p role="status"
+     th:if="${successMessage != null}"
+     th:text="${successMessage}">
+  </p>
+
+  <p class="error"
+     role="alert"
+     th:if="${errorMessage != null}"
+     th:text="${errorMessage}">
+  </p>
+
+  <section class="card login-card">
+    <h2>Tạo khung giờ</h2>
+
+    <form th:action="@{/admin/slots}"
+          th:object="${slotForm}"
+          method="post"
+          onsubmit="this.querySelector('button[type=submit]').disabled = true;">
+
+      <div class="error"
+           role="alert"
+           th:if="${#fields.hasAnyErrors()}">
+        <p th:each="error : ${#fields.allErrors()}"
+           th:text="${error}">
+        </p>
+      </div>
+
+      <label for="consultantId">Tư vấn viên</label>
+      <select id="consultantId"
+              th:field="*{consultantId}"
+              required>
+        <option value="">Chọn tư vấn viên</option>
+
+        <option th:each="consultant : ${consultants}"
+                th:value="${consultant.id()}"
+                th:text="${consultant.fullName()}">
+        </option>
+      </select>
+
+      <label for="startAt">Ngày giờ bắt đầu</label>
+      <input id="startAt"
+             type="datetime-local"
+             th:field="*{startAt}"
+             step="1800"
+             required>
+
+      <p>Chọn giờ trong tương lai, bắt đầu ở phút 00 hoặc 30.</p>
+
+      <button class="button full" type="submit">
+        Tạo khung giờ
+      </button>
+    </form>
+  </section>
+
+  <section class="card login-card">
+    <h2>Xem giờ còn trống</h2>
+
+    <form th:action="@{/admin/slots}" method="get">
+      <label for="filterConsultant">Tư vấn viên</label>
+
+      <select id="filterConsultant"
+              name="consultantId"
+              required>
+        <option value="">Chọn tư vấn viên</option>
+
+        <option th:each="consultant : ${consultants}"
+                th:value="${consultant.id()}"
+                th:text="${consultant.fullName()}"
+                th:selected="${consultant.id() == selectedConsultantId}">
+        </option>
+      </select>
+
+      <button class="button" type="submit">
+        Xem khung giờ
+      </button>
+    </form>
+  </section>
+
+  <section th:if="${selectedConsultantId != null}">
+    <h2>Khung giờ còn trống trong tương lai</h2>
+
+    <p class="empty" th:if="${#lists.isEmpty(slots)}">
+      Không có khung giờ còn trống.
+    </p>
+
+    <div class="grid">
+      <article class="card" th:each="slot : ${slots}">
+        <h3 th:text="${slot.startAt().format(
+                    T(java.time.format.DateTimeFormatter)
+                        .ofPattern('dd/MM/yyyy HH:mm')
+                )}"></h3>
+
+        <p>
+          Kết thúc:
+          <span th:text="${slot.endAt().toLocalTime()}"></span>
+        </p>
+      </article>
+    </div>
+  </section>
+</main>
 </body>
 </html>
