@@ -1,0 +1,8 @@
+server.port=8082
+
+spring.datasource.url=jdbc:postgresql://localhost:5433/course_consultation
+spring.datasource.username=course_user
+spring.datasource.password=local_course_password
+
+spring.jpa.show-sql=true
+spring.web.error.include-message=always
