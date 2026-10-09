@@ -14,7 +14,14 @@ public class SecurityConfig {
             throws Exception {
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/error", "/", "/courses", "/login", "/css/**").permitAll()
+                .requestMatchers(
+                        "/error",
+                        "/",
+                        "/courses",
+                        "/login",
+                        "/register",
+                        "/css/**"
+                ).permitAll()
 
                 .requestMatchers(
                         HttpMethod.GET,
